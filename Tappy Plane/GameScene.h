@@ -10,6 +10,6 @@
 
 static const CGFloat minFPS = 10.0 / 60.0;
 
-@interface GameScene : SKScene
+@interface GameScene : SKScene <SKPhysicsContactDelegate>
 
 @end

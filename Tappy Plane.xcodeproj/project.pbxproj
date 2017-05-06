@@ -22,6 +22,8 @@
 		1BC9A14A1EBD37290005F98A /* PlanePuffTrail.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1BC9A1491EBD37290005F98A /* PlanePuffTrail.sks */; };
 		1BC9A14D1EBE36650005F98A /* TScrollingNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A14C1EBE36650005F98A /* TScrollingNode.m */; };
 		1BC9A1501EBE373A0005F98A /* TScrollingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A14F1EBE373A0005F98A /* TScrollingLayer.m */; };
+		1BC9A1531EBE4C310005F98A /* TConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A1521EBE4C310005F98A /* TConstants.m */; };
+		1BC9A1561EBE58560005F98A /* TObstacleLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A1551EBE58560005F98A /* TObstacleLayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,10 @@
 		1BC9A14C1EBE36650005F98A /* TScrollingNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TScrollingNode.m; sourceTree = "<group>"; };
 		1BC9A14E1EBE373A0005F98A /* TScrollingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TScrollingLayer.h; sourceTree = "<group>"; };
 		1BC9A14F1EBE373A0005F98A /* TScrollingLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TScrollingLayer.m; sourceTree = "<group>"; };
+		1BC9A1511EBE4C310005F98A /* TConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TConstants.h; sourceTree = "<group>"; };
+		1BC9A1521EBE4C310005F98A /* TConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TConstants.m; sourceTree = "<group>"; };
+		1BC9A1541EBE58560005F98A /* TObstacleLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TObstacleLayer.h; sourceTree = "<group>"; };
+		1BC9A1551EBE58560005F98A /* TObstacleLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TObstacleLayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,8 +115,12 @@
 				1BC9A11F1EB903DC0005F98A /* GameScene.sks */,
 				1BC9A1211EB903DC0005F98A /* GameViewController.h */,
 				1BC9A1221EB903DD0005F98A /* GameViewController.m */,
+				1BC9A1511EBE4C310005F98A /* TConstants.h */,
+				1BC9A1521EBE4C310005F98A /* TConstants.m */,
 				1BC9A1421EB929190005F98A /* TPlane.h */,
 				1BC9A1431EB929190005F98A /* TPlane.m */,
+				1BC9A1541EBE58560005F98A /* TObstacleLayer.h */,
+				1BC9A1551EBE58560005F98A /* TObstacleLayer.m */,
 				1BC9A14B1EBE36650005F98A /* TScrollingNode.h */,
 				1BC9A14C1EBE36650005F98A /* TScrollingNode.m */,
 				1BC9A14E1EBE373A0005F98A /* TScrollingLayer.h */,
@@ -263,10 +273,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1BC9A1531EBE4C310005F98A /* TConstants.m in Sources */,
 				1BC9A1231EB903DD0005F98A /* GameViewController.m in Sources */,
 				1BC9A11B1EB903DC0005F98A /* AppDelegate.m in Sources */,
 				1BC9A1501EBE373A0005F98A /* TScrollingLayer.m in Sources */,
 				1BC9A14D1EBE36650005F98A /* TScrollingNode.m in Sources */,
+				1BC9A1561EBE58560005F98A /* TObstacleLayer.m in Sources */,
 				1BC9A11E1EB903DC0005F98A /* GameScene.m in Sources */,
 				1BC9A1181EB903DC0005F98A /* main.m in Sources */,
 				1BC9A1441EB929190005F98A /* TPlane.m in Sources */,

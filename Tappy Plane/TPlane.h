@@ -9,6 +9,7 @@
 #import <SpriteKit/SpriteKit.h>
 
 static NSString* const TPKEY_PlANE_ANIMATION = @"PlaneAnimation";
+static const CGFloat MAX_ALTITUDE = 300.0;
 
 @interface TPlane : SKSpriteNode
 

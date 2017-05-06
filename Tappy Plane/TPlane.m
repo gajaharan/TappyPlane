@@ -7,6 +7,7 @@
 //
 
 #import "TPlane.h"
+#import "TConstants.h"
 
 @interface TPlane()
 @property (nonatomic) NSMutableArray *planeAnimations; // Holds animation actions.
@@ -25,7 +26,28 @@
         
         // Setup physics body with path.
         self.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:self.size.width * 0.5];
+        
+        CGFloat offsetX = self.frame.size.width * self.anchorPoint.x;
+        CGFloat offsetY = self.frame.size.height * self.anchorPoint.y;
+        
+        CGMutablePathRef path = CGPathCreateMutable();
+        CGPathMoveToPoint(path, NULL, 43 - offsetX, 18 - offsetY);
+        CGPathAddLineToPoint(path, NULL, 34 - offsetX, 36 - offsetY);
+        CGPathAddLineToPoint(path, NULL, 11 - offsetX, 35 - offsetY);
+        CGPathAddLineToPoint(path, NULL, 0 - offsetX, 28 - offsetY);
+        CGPathAddLineToPoint(path, NULL, 10 - offsetX, 4 - offsetY);
+        CGPathAddLineToPoint(path, NULL, 29 - offsetX, 0 - offsetY);
+        CGPathAddLineToPoint(path, NULL, 37 - offsetX, 5 - offsetY);
+        CGPathCloseSubpath(path);
+        
+        self.physicsBody = [SKPhysicsBody bodyWithPolygonFromPath:path];
         self.physicsBody.mass = 0.08;
+        self.physicsBody.categoryBitMask = CATEGORY_PLANE;
+        self.physicsBody.contactTestBitMask = CATEGORY_GROUND | CATEGORY_COLLECTABLE;
+        self.physicsBody.collisionBitMask = CATEGORY_GROUND;
+        
+        
+
         
         // Init array to hold animation actions.
         _planeAnimations = [[NSMutableArray alloc] init];
@@ -68,8 +90,7 @@
                                                                 resize:NO restore:NO]];
 }
 
-- (void)setRandomColour
-{
+- (void)setRandomColour {
     [self removeActionForKey:TPKEY_PlANE_ANIMATION];
     SKAction *animation = [self.planeAnimations objectAtIndex:arc4random_uniform((uint)self.planeAnimations.count)];
     [self runAction:animation withKey:TPKEY_PlANE_ANIMATION];
@@ -96,14 +117,48 @@
 }
 
 - (void)update {
-    if (self.accelerating) {
+    if (self.accelerating && self.position.y < MAX_ALTITUDE) {
         [self.physicsBody applyForce:CGVectorMake(0.0, 100)];
     }
-    if(!self.crashed)
-    {
+    if(!self.crashed) {
         self.zRotation = fmaxf(fminf(self.physicsBody.velocity.dy, 400), -400) / 400;
         //self.engineSound.volume = 0.25 + fmaxf(fminf(self.physicsBody.velocity.dy, 300), 0) / 300 * 0.75;
     }
+}
+
+- (void)collide:(SKPhysicsBody *)body {
+    // Ignore collision if already crashed.
+    if (!self.crashed) {
+        if (body.categoryBitMask == CATEGORY_GROUND) {
+            // Hit the ground.
+            self.crashed = YES;
+            [self runAction:self.crashTintAction];
+            //[[SoundManager sharedManager] playSound:@"Crunch.caf"];
+        }
+        if (body.categoryBitMask == CATEGORY_COLLECTABLE) {
+            if ([body.node respondsToSelector:@selector(collect)]) {
+                [body.node performSelector:@selector(collect)];
+            }
+        }
+    }
+}
+
+- (void)setCrashed:(BOOL)crashed {
+    _crashed = crashed;
+    if (crashed) {
+        self.engineRunning = NO;
+        self.accelerating = NO;
+    }
+}
+
+- (void)reset {
+    // Set plane's initial values.
+    self.crashed = NO;
+    self.engineRunning = YES;
+    self.physicsBody.velocity = CGVectorMake(0.0, 0.0);
+    self.zRotation = 0.0;
+    self.physicsBody.angularVelocity = 0.0;
+    [self setRandomColour];
 }
 
 
