@@ -8,6 +8,8 @@
 
 #import <SpriteKit/SpriteKit.h>
 
+static const CGFloat minFPS = 10.0 / 60.0;
+
 @interface GameScene : SKScene
 
 @end

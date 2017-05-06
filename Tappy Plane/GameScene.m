@@ -7,43 +7,89 @@
 //
 
 #import "GameScene.h"
+#import "TPlane.h"
+#import "TScrollingLayer.h"
+
+@interface GameScene ()
+
+@property (nonatomic) TPlane *player;
+@property (nonatomic) SKNode *world;
+@property (nonatomic) TScrollingLayer *background;
+
+@end
 
 @implementation GameScene
 
 -(void)didMoveToView:(SKView *)view {
     /* Setup your scene here */
-    SKLabelNode *myLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+    [self setupScene];
+
+}
+
+-(void)setupScene {
     
-    myLabel.text = @"Hello, World!";
-    myLabel.fontSize = 45;
-    myLabel.position = CGPointMake(CGRectGetMidX(self.frame),
-                                   CGRectGetMidY(self.frame));
+    // Set background colour to sky blue.
+    self.backgroundColor = [SKColor colorWithRed:0.835294118 green:0.929411765 blue:0.968627451 alpha:1.0];
     
-    [self addChild:myLabel];
+    // Get atlas file.
+    SKTextureAtlas *graphics = [SKTextureAtlas atlasNamed:@"Graphics"];
+    
+    // Setup world.
+    _world = [SKNode node];
+    [self addChild:_world];
+    
+    // Setup background.
+    NSMutableArray *backgroudTiles = [[NSMutableArray alloc] init];
+    for (int i = 0; i < 3; i++) {
+        [backgroudTiles addObject:[SKSpriteNode spriteNodeWithTexture:[graphics textureNamed:@"background"]]];
+    }
+
+    _background = [[TScrollingLayer alloc] initWithTiles:backgroudTiles];
+    _background.horizontalScrollSpeed = -60;
+    _background.scrolling = YES;
+    [_world addChild:_background];
+    
+    // Setup player.
+    _player = [[TPlane alloc] init];
+    _player.position = CGPointMake(self.size.width * 0.5, self.size.height * 0.5);
+    _player.physicsBody.affectedByGravity = NO;
+    [_world addChild:_player];
+    _player.engineRunning = YES;
+    
+    // Setup physics.
+    self.physicsWorld.gravity = CGVectorMake(0.0, -5.5);
+    
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     /* Called when a touch begins */
     
     for (UITouch *touch in touches) {
-        CGPoint location = [touch locationInNode:self];
-        
-        SKSpriteNode *sprite = [SKSpriteNode spriteNodeWithImageNamed:@"Spaceship"];
-        
-        sprite.xScale = 0.5;
-        sprite.yScale = 0.5;
-        sprite.position = location;
-        
-        SKAction *action = [SKAction rotateByAngle:M_PI duration:1];
-        
-        [sprite runAction:[SKAction repeatActionForever:action]];
-        
-        [self addChild:sprite];
+        self.player.engineRunning = !self.player.engineRunning;
+        //[self.player setRandomColour];
+        self.player.physicsBody.affectedByGravity = YES;
+        self.player.accelerating = YES;
     }
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    self.player.accelerating = NO;
 }
 
 -(void)update:(CFTimeInterval)currentTime {
     /* Called before each frame is rendered */
+    
+    static NSTimeInterval lastCallTime;
+    NSTimeInterval timeElapsed = currentTime - lastCallTime;
+    if (timeElapsed > minFPS) {
+        timeElapsed = minFPS;
+    }
+    lastCallTime = currentTime;
+    
+    [self.player update];
+    [self.background updateWithTimeElpased:timeElapsed];
+    
 }
 
 @end
