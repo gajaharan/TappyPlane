@@ -28,6 +28,9 @@
 		1BC9A15C1EBE92EB0005F98A /* TBitmapFontLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A15B1EBE92EB0005F98A /* TBitmapFontLabel.m */; };
 		1BC9A15E1EBEA56C0005F98A /* TilesetGraphics.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1BC9A15D1EBEA56C0005F98A /* TilesetGraphics.plist */; };
 		1BC9A1611EBEA5FF0005F98A /* TTilesetTextureProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A1601EBEA5FF0005F98A /* TTilesetTextureProvider.m */; };
+		1BC9A1641EBF34350005F98A /* TButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A1631EBF34350005F98A /* TButton.m */; };
+		1BC9A1681EBF3FF90005F98A /* TGameOverMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A1671EBF3FF90005F98A /* TGameOverMenu.m */; };
+		1BC9A16B1EBF51880005F98A /* TGetReadyMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A16A1EBF51870005F98A /* TGetReadyMenu.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +80,12 @@
 		1BC9A15D1EBEA56C0005F98A /* TilesetGraphics.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TilesetGraphics.plist; sourceTree = "<group>"; };
 		1BC9A15F1EBEA5FF0005F98A /* TTilesetTextureProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTilesetTextureProvider.h; sourceTree = "<group>"; };
 		1BC9A1601EBEA5FF0005F98A /* TTilesetTextureProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTilesetTextureProvider.m; sourceTree = "<group>"; };
+		1BC9A1621EBF34350005F98A /* TButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TButton.h; sourceTree = "<group>"; };
+		1BC9A1631EBF34350005F98A /* TButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TButton.m; sourceTree = "<group>"; };
+		1BC9A1661EBF3FF90005F98A /* TGameOverMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGameOverMenu.h; sourceTree = "<group>"; };
+		1BC9A1671EBF3FF90005F98A /* TGameOverMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TGameOverMenu.m; sourceTree = "<group>"; };
+		1BC9A1691EBF51870005F98A /* TGetReadyMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGetReadyMenu.h; sourceTree = "<group>"; };
+		1BC9A16A1EBF51870005F98A /* TGetReadyMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TGetReadyMenu.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +141,12 @@
 				1BC9A1521EBE4C310005F98A /* TConstants.m */,
 				1BC9A1571EBE8C570005F98A /* TCollectable.h */,
 				1BC9A1581EBE8C570005F98A /* TCollectable.m */,
+				1BC9A1621EBF34350005F98A /* TButton.h */,
+				1BC9A1631EBF34350005F98A /* TButton.m */,
+				1BC9A1691EBF51870005F98A /* TGetReadyMenu.h */,
+				1BC9A16A1EBF51870005F98A /* TGetReadyMenu.m */,
+				1BC9A1661EBF3FF90005F98A /* TGameOverMenu.h */,
+				1BC9A1671EBF3FF90005F98A /* TGameOverMenu.m */,
 				1BC9A1421EB929190005F98A /* TPlane.h */,
 				1BC9A1431EB929190005F98A /* TPlane.m */,
 				1BC9A1541EBE58560005F98A /* TObstacleLayer.h */,
@@ -293,9 +308,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				1BC9A1531EBE4C310005F98A /* TConstants.m in Sources */,
+				1BC9A1641EBF34350005F98A /* TButton.m in Sources */,
 				1BC9A1231EB903DD0005F98A /* GameViewController.m in Sources */,
+				1BC9A1681EBF3FF90005F98A /* TGameOverMenu.m in Sources */,
 				1BC9A11B1EB903DC0005F98A /* AppDelegate.m in Sources */,
 				1BC9A1501EBE373A0005F98A /* TScrollingLayer.m in Sources */,
+				1BC9A16B1EBF51880005F98A /* TGetReadyMenu.m in Sources */,
 				1BC9A14D1EBE36650005F98A /* TScrollingNode.m in Sources */,
 				1BC9A1591EBE8C570005F98A /* TCollectable.m in Sources */,
 				1BC9A1561EBE58560005F98A /* TObstacleLayer.m in Sources */,
@@ -431,6 +449,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				INFOPLIST_FILE = "Tappy Plane/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gajaharan.Tappy-Plane";
@@ -442,6 +461,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				INFOPLIST_FILE = "Tappy Plane/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gajaharan.Tappy-Plane";

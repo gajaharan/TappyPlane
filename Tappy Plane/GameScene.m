@@ -13,6 +13,16 @@
 #import "TObstacleLayer.h"
 #import "TBitmapFontLabel.h"
 #import "TTilesetTextureProvider.h"
+#import "TButton.h"
+#import "TGameOverMenu.h"
+#import "TGetReadyMenu.h"
+
+
+typedef enum : NSUInteger {
+    GameReady,
+    GameRunning,
+    GameOver,
+} GameState;
 
 @interface GameScene ()
 
@@ -23,6 +33,10 @@
 @property (nonatomic) TObstacleLayer *obstacles;
 @property (nonatomic) TBitmapFontLabel *scoreLabel;
 @property (nonatomic) NSInteger score;
+@property (nonatomic) NSInteger bestScore;
+@property (nonatomic) TGetReadyMenu *getReadyMenu;
+@property (nonatomic) TGameOverMenu *gameOverMenu;
+@property (nonatomic) GameState gameState;
 
 @end
 
@@ -84,6 +98,24 @@
     _scoreLabel.position = CGPointMake(self.size.width * 0.5, self.size.height - 100);
     [self addChild:_scoreLabel];
     
+    
+    //TButton * button = [TButton spriteNodeWithTexture:[graphics textureNamed:@"buttonPlay"]];
+    //button.position = CGPointMake(self.size.width * 0.5, self.size.height *.05);
+    //[button setPressedTarget:self withAction:@selector(pressedPlayButton)];
+    //[self addChild:button];
+    
+    // Setup get ready menu.
+    _getReadyMenu = [[TGetReadyMenu alloc] initWithSize:self.size andPlanePosition:CGPointMake(self.size.width * 0.3, self.size.height * 0.5)];
+    [self addChild:_getReadyMenu];
+    
+    // Setup game over menu.
+    _gameOverMenu = [[TGameOverMenu alloc] initWithSize:self.size];
+    _gameOverMenu.delegate = self;
+    
+    
+    // Load best score.
+    self.bestScore = [[NSUserDefaults standardUserDefaults] integerForKey:KEY_BEST_SCORE];
+    
     // Setup physics.
     self.physicsWorld.gravity = CGVectorMake(0.0, -5.5);
     self.physicsWorld.contactDelegate = self;
@@ -128,6 +160,29 @@
     return sprite;
 }
 
+-(void)pressedStartNewGameButton {
+    SKSpriteNode *blackRectangle = [SKSpriteNode spriteNodeWithColor:[SKColor blackColor] size:self.size];
+    //blackRectangle.centerRect = CGRectMake(0,0,self.size.width, self.size.height);
+    //blackRectangle.anchorPoint = CGPointMake(0, 0);
+    //blackRectangle.position = CGPointMake(self.size.width *0.5,self.size.height *0.5);
+    //blackRectangle.alpha = 0.0;
+    [self addChild:blackRectangle];
+    
+    SKAction *startNewGame = [SKAction runBlock:^{
+        [self newGame];
+        [self.gameOverMenu removeFromParent];
+        [self.getReadyMenu show];
+    }];
+    
+    SKAction *fadeTransition = [SKAction sequence:@[[SKAction fadeInWithDuration:0.4],
+                                                    startNewGame,
+                                                    [SKAction fadeOutWithDuration:0.6],
+                                                    [SKAction removeFromParent]]];
+    [blackRectangle runAction:fadeTransition];
+
+}
+
+
 -(void)newGame {
     
     // Randomize tileset.
@@ -154,26 +209,37 @@
     self.player.position = CGPointMake(self.size.width * 0.3, self.size.height * 0.5);
     self.player.physicsBody.affectedByGravity = NO;
     [self.player reset];
+    
+    // Set game state to ready
+    self.gameState = GameReady;
 
 }
+
+//-(void)pressedPlayButton {
+//    NSLog(@"Play Button pressed");
+//}
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     /* Called when a touch begins */
     
-    for (UITouch *touch in touches) {
-        if(self.player.crashed) {
-            //reset game
-            [self newGame];
-        } else {
-        self.player.physicsBody.affectedByGravity = YES;
-        self.player.accelerating = YES;
+    //for (UITouch *touch in touches) {
+        if (self.gameState == GameReady) {
+            [self.getReadyMenu hide];
+            self.player.physicsBody.affectedByGravity = YES;
             self.obstacles.scrolling = YES;
+            self.gameState = GameRunning;
         }
-    }
+        
+        if (self.gameState == GameRunning) {
+            self.player.accelerating = YES;
+        }
+    //}
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    self.player.accelerating = NO;
+    if (self.gameState == GameRunning) {
+        self.player.accelerating = NO;
+    }
 }
 
 -(void)update:(CFTimeInterval)currentTime {
@@ -187,10 +253,15 @@
     lastCallTime = currentTime;
     
     [self.player update];
+    if (self.gameState == GameRunning && self.player.crashed) {
+        // Player just crashed in last frame so trigger game over.
+        [self bump];
+        [self gameOver];
+    }
     
-    if(!self.player.crashed) {
-    [self.background updateWithTimeElpased:timeElapsed];
-    [self.foreground updateWithTimeElpased:timeElapsed];
+    if (self.gameState != GameOver) {
+        [self.background updateWithTimeElpased:timeElapsed];
+        [self.foreground updateWithTimeElpased:timeElapsed];
         [self.obstacles updateWithTimeElpased:timeElapsed];
     }
 
@@ -214,6 +285,48 @@
 -(void)setScore:(NSInteger)score {
     _score = score;
     self.scoreLabel.text = [NSString stringWithFormat:@"%ld", (long)score];
+}
+
+-(void)gameOver
+{
+    // Update game state.
+    self.gameState = GameOver;
+    // Fade out score display.
+    [self.scoreLabel runAction:[SKAction fadeOutWithDuration:0.4]];
+    // Set properties on game over menu
+    self.gameOverMenu.score = self.score;
+    self.gameOverMenu.medal = [self getMedalForCurrentScore];
+    // Updtate best score.
+    if (self.score > self.bestScore) {
+        self.bestScore = self.score;
+        [[NSUserDefaults standardUserDefaults] setInteger:self.bestScore forKey:KEY_BEST_SCORE];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    self.gameOverMenu.bestScore = self.bestScore;
+    // Show game over menu.
+    [self addChild:self.gameOverMenu];
+    [self.gameOverMenu show];
+}
+
+-(MedalType)getMedalForCurrentScore
+{
+    NSInteger adjustedScore = self.score - (self.bestScore / 5);
+    
+    if (adjustedScore >= 45) {
+        return MedalGold;
+    } else if (adjustedScore >= 25) {
+        return MedalSilver;
+    } else if (adjustedScore >= 10) {
+        return MedalBronze;
+    }
+    return MedalNone;
+}
+
+-(void)bump
+{
+    SKAction *bump = [SKAction sequence:@[[SKAction moveBy:CGVectorMake(-5, -4) duration:0.1],
+                                          [SKAction moveTo:CGPointZero duration:0.1]]];
+    [self.world runAction:bump];
 }
 
 @end
