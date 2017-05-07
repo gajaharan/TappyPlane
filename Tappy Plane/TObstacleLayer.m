@@ -8,6 +8,7 @@
 
 #import "TObstacleLayer.h"
 #import "TConstants.h"
+#import "TTilesetTextureProvider.h"
 
 @interface TObstacleLayer()
 
@@ -18,7 +19,7 @@
 static const CGFloat MARKER_BUFFER = 200.0;
 static const CGFloat VERTICAL_GAP = 90.0;
 static const CGFloat SPACE_BETWEEN_OBSTACLE_SETS = 180.0;
-static const int COLLECTABLE_VECTOR_RANGE = 200.0;
+static const int COLLECTABLE_VERTICAL_RANGE = 200.0;
 static const CGFloat COLLECTABLE_CLEARANCE = 50.0;
 
 static NSString *const KEY_MOUNTAIN_UP = @"MountainUp";
@@ -74,18 +75,18 @@ static NSString *const KEY_COLLECTABLE_STAR = @"CollectableStar";
     mountainUp.position = CGPointMake(self.marker, self.floor + (mountainUp.size.height * 0.5) - yAdjustment);
     mountainDown.position = CGPointMake(self.marker, mountainUp.position.y + mountainDown.size.height + VERTICAL_GAP);
     
-//    // Get collectable star node.
-//    SKSpriteNode *collectable = [self getUnusedObjectForKey:KEY_COLLECTABLE_STAR];
-//    
-//    // Position collectable.
-//    CGFloat midPoint = mountainUp.position.y + (mountainUp.size.height * 0.5) + (kTPVerticalGap * 0.5);
-//    CGFloat yPosition = midPoint + arc4random_uniform(kTPCollectableVerticalRange) - (kTPCollectableVerticalRange * 0.5);
-//    
-//    yPosition = fmaxf(yPosition, self.floor + kTPCollectableClearance);
-//    yPosition = fminf(yPosition, self.ceiling - kTPCollectableClearance);
-//    
-//    collectable.position = CGPointMake(self.marker + (kTPSpaceBetweenObstacleSets * 0.5), yPosition);
-//    
+    // Get collectable star node.
+    SKSpriteNode *collectable = [self getUnusedObjectForKey:KEY_COLLECTABLE_STAR];
+    
+    // Position collectable.
+    CGFloat midPoint = mountainUp.position.y + (mountainUp.size.height * 0.5) + (VERTICAL_GAP * 0.5);
+    CGFloat yPosition = midPoint + arc4random_uniform(COLLECTABLE_VERTICAL_RANGE) - (COLLECTABLE_VERTICAL_RANGE * 0.5);
+    
+    yPosition = fmaxf(yPosition, self.floor + COLLECTABLE_CLEARANCE);
+    yPosition = fminf(yPosition, self.ceiling - COLLECTABLE_CLEARANCE);
+    
+    collectable.position = CGPointMake(self.marker + (SPACE_BETWEEN_OBSTACLE_SETS * 0.5), yPosition);
+    
     // Reposition marker.
     self.marker += SPACE_BETWEEN_OBSTACLE_SETS;
     
@@ -98,9 +99,9 @@ static NSString *const KEY_COLLECTABLE_STAR = @"CollectableStar";
     SKTextureAtlas *atlas = [SKTextureAtlas atlasNamed:@"Graphics"];
     
     if (key == KEY_MOUNTAIN_UP) {
-        object = [SKSpriteNode spriteNodeWithTexture:[atlas textureNamed:@"MountainGrass"]];
+        //object = [SKSpriteNode spriteNodeWithTexture:[atlas textureNamed:@"MountainGrass"]];
 
-        //object = [SKSpriteNode spriteNodeWithTexture:[[TPTilesetTextureProvider getProvider] getTextureForKey:@"mountainUp"]];
+        object = [SKSpriteNode spriteNodeWithTexture:[[TTilesetTextureProvider getProvider] getTextureForKey:@"mountainUp"]];
         
         CGFloat offsetX = object.frame.size.width * object.anchorPoint.x;
         CGFloat offsetY = object.frame.size.height * object.anchorPoint.y;
@@ -117,8 +118,8 @@ static NSString *const KEY_COLLECTABLE_STAR = @"CollectableStar";
         [self addChild:object];
     }
     else if (key == KEY_MOUNTAIN_DOWN) {
-        object = [SKSpriteNode spriteNodeWithTexture:[atlas textureNamed:@"MountainGrassDown"]];
-        //object = [SKSpriteNode spriteNodeWithTexture:[[TPTilesetTextureProvider getProvider] getTextureForKey:@"mountainDown"]];
+        //object = [SKSpriteNode spriteNodeWithTexture:[atlas textureNamed:@"MountainGrassDown"]];
+        object = [SKSpriteNode spriteNodeWithTexture:[[TTilesetTextureProvider getProvider] getTextureForKey:@"mountainDown"]];
         
         CGFloat offsetX = object.frame.size.width * object.anchorPoint.x;
         CGFloat offsetY = object.frame.size.height * object.anchorPoint.y;
@@ -133,16 +134,16 @@ static NSString *const KEY_COLLECTABLE_STAR = @"CollectableStar";
         object.physicsBody.categoryBitMask = CATEGORY_GROUND;
         
         [self addChild:object];
-//    } else if (key == kTPKeyCollectableStar) {
-//        object = [TPCollectable spriteNodeWithTexture:[atlas textureNamed:@"starGold"]];
-//        ((TPCollectable*)object).pointValue = 1;
-//        ((TPCollectable*)object).delegate = self.collectableDelegate;
-//        ((TPCollectable*)object).collectionSound = [Sound soundNamed:@"Collect.caf"];
-//        object.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:object.size.width * 0.3];
-//        object.physicsBody.categoryBitMask = kTPCategoryCollectable;
-//        object.physicsBody.dynamic = NO;
+    } else if (key == KEY_COLLECTABLE_STAR) {
+        object = [TCollectable spriteNodeWithTexture:[atlas textureNamed:@"starGold"]];
+        ((TCollectable*)object).pointValue = 1;
+        ((TCollectable*)object).delegate = self.collectableDelegate;
+        //((TCollectable*)object).collectionSound = [Sound soundNamed:@"Collect.caf"];
+        object.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:object.size.width * 0.3];
+        object.physicsBody.categoryBitMask = CATEGORY_COLLECTABLE;
+        object.physicsBody.dynamic = NO;
         
-        //[self addChild:object];
+        [self addChild:object];
     }
     
     if (object) {
@@ -176,12 +177,12 @@ static NSString *const KEY_COLLECTABLE_STAR = @"CollectableStar";
     // Loop through child nodes and reposition for reuse and update texture.
     for (SKNode *node in self.children) {
         node.position = CGPointMake(-1000, 0);
-        //if (node.name == KEY_MOUNTAIN_UP) {
-        //    ((SKSpriteNode*)node).texture = [[TPTilesetTextureProvider getProvider] getTextureForKey:@"mountainUp"];
-        //}
-        //if (node.name == kTPKeyMountainDown) {
-        //    ((SKSpriteNode*)node).texture = [[TPTilesetTextureProvider getProvider] getTextureForKey:@"mountainDown"];
-        //}
+        if (node.name == KEY_MOUNTAIN_UP) {
+            ((SKSpriteNode*)node).texture = [[TTilesetTextureProvider getProvider] getTextureForKey:@"mountainUp"];
+        }
+        if (node.name == KEY_MOUNTAIN_DOWN) {
+            ((SKSpriteNode*)node).texture = [[TTilesetTextureProvider getProvider] getTextureForKey:@"mountainDown"];
+        }
     }
     
     // Reposition marker.

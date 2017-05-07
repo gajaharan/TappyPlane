@@ -11,6 +11,8 @@
 #import "TScrollingLayer.h"
 #import "TConstants.h"
 #import "TObstacleLayer.h"
+#import "TBitmapFontLabel.h"
+#import "TTilesetTextureProvider.h"
 
 @interface GameScene ()
 
@@ -19,7 +21,8 @@
 @property (nonatomic) TScrollingLayer *background;
 @property (nonatomic) TScrollingLayer *foreground;
 @property (nonatomic) TObstacleLayer *obstacles;
-
+@property (nonatomic) TBitmapFontLabel *scoreLabel;
+@property (nonatomic) NSInteger score;
 
 @end
 
@@ -64,7 +67,7 @@
     
     // Setup obstacle layer.
     _obstacles = [[TObstacleLayer alloc] init];
-    //_obstacles.collectableDelegate = self;
+    _obstacles.collectableDelegate = self;
     _obstacles.horizontalScrollSpeed = -80;
     _obstacles.scrolling = YES;
     _obstacles.floor = 0.0;
@@ -73,9 +76,13 @@
     
     // Setup player.
     _player = [[TPlane alloc] init];
-    _player.position = CGPointMake(self.size.width * 0.5, self.size.height * 0.5);
     _player.physicsBody.affectedByGravity = NO;
     [_world addChild:_player];
+    
+    // Setup score label.
+    _scoreLabel = [[TBitmapFontLabel alloc] initWithText:@"0" andFontName:@"number"];
+    _scoreLabel.position = CGPointMake(self.size.width * 0.5, self.size.height - 100);
+    [self addChild:_scoreLabel];
     
     // Setup physics.
     self.physicsWorld.gravity = CGVectorMake(0.0, -5.5);
@@ -123,14 +130,24 @@
 
 -(void)newGame {
     
+    // Randomize tileset.
+    [[TTilesetTextureProvider getProvider] randomizeTileset];
+    
     // Reset layers.
     self.foreground.position = CGPointZero;
+    for (SKSpriteNode *node in self.foreground.children) {
+        node.texture = [[TTilesetTextureProvider getProvider] getTextureForKey:@"ground"];
+    }
     [self.foreground layoutTiles];
     self.obstacles.position = CGPointZero;
     [self.obstacles reset];
     self.obstacles.scrolling = NO;
-    self.background.position = CGPointMake(0, 30);
+    self.background.position = CGPointMake(0, 0);
     [self.background layoutTiles];
+    
+    // Reset score.
+    self.score = 0;
+    self.scoreLabel.alpha = 1.0;
     
     
     // Reset plane.
@@ -144,8 +161,6 @@
     /* Called when a touch begins */
     
     for (UITouch *touch in touches) {
-        //self.player.engineRunning = !self.player.engineRunning;
-        //[self.player setRandomColour];
         if(self.player.crashed) {
             //reset game
             [self newGame];
@@ -182,8 +197,7 @@
     
 }
 
--(void)didBeginContact:(SKPhysicsContact *)contact
-{
+-(void)didBeginContact:(SKPhysicsContact *)contact {
     if (contact.bodyA.categoryBitMask == CATEGORY_PLANE) {
         [self.player collide:contact.bodyB];
     }
@@ -191,6 +205,15 @@
         [self.player collide:contact.bodyA];
     }
     
+}
+
+-(void)wasCollected:(TCollectable *)collectable {
+    self.score += collectable.pointValue;
+}
+
+-(void)setScore:(NSInteger)score {
+    _score = score;
+    self.scoreLabel.text = [NSString stringWithFormat:@"%ld", (long)score];
 }
 
 @end

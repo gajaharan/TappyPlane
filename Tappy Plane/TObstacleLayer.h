@@ -7,10 +7,11 @@
 //
 
 #import "TScrollingNode.h"
+#import "TCollectable.h"
 
 @interface TObstacleLayer : TScrollingNode
 
-//@property (nonatomic, weak) id<TCollectableDelegate> collectableDelegate;
+@property (nonatomic, weak) id<TCollectableDelegate> collectableDelegate;
 
 @property (nonatomic) CGFloat floor;
 @property (nonatomic) CGFloat ceiling;

@@ -7,9 +7,10 @@
 //
 
 #import <SpriteKit/SpriteKit.h>
+#import "TCollectable.h"
 
 static const CGFloat minFPS = 10.0 / 60.0;
 
-@interface GameScene : SKScene <SKPhysicsContactDelegate>
+@interface GameScene : SKScene <SKPhysicsContactDelegate, TCollectableDelegate>
 
 @end

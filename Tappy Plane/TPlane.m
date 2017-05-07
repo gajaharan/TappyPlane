@@ -8,6 +8,7 @@
 
 #import "TPlane.h"
 #import "TConstants.h"
+#import "TCollectable.h"
 
 @interface TPlane()
 @property (nonatomic) NSMutableArray *planeAnimations; // Holds animation actions.
